@@ -1,17 +1,29 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
-model users {
-  id String @id @default(uuid())
-
-  @@map("feedbacks")
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model Users {
+  id              Int     @id @default(autoincrement())
+  ua_jurisdiction String?
+  name            String?
+  cpf             String?
+  cnae            String?
+  cnpj            String?
+  logradouro      String?
+  complement      String?
+  zone            String?
+  city_code       String?
+  city            String?
+  state           String?
+  zip_code        String?
+  debts           String?
+  mei_inscription String?
+  article         String?
+  users           String? @db.VarChar(1024)
 }
