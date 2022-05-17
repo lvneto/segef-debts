@@ -1,7 +1,23 @@
 export interface UserCreateData {
-  users: string;
+  id:              number;
+  ua_jurisdiction: string;
+  name:            string;
+  cpf:             string;
+  cnae:            string;
+  cnpj:            string;
+  logradouro:      string;
+  complement:      string;
+  zone:            string;
+  city_code:       string;
+  city:            string;
+  state:           string;
+  zip_code:        string;
+  debts:           string;
+  mei_inscription: string;
+  article:         string;
+  users:           string;
 }
 
 export interface UsersRepository {
-  findUsers: (skip:number, take: number) => Promise<any>;
+  findUsers: (skip:number, take: number) => Promise<UserCreateData>;
 } 
