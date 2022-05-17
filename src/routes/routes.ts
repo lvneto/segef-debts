@@ -1,24 +1,21 @@
-import express from 'express';
+import express, { Response } from 'express';
 import { PrismaUsersRepository } from '../repositories/prisma/prisma-users-repository';
-import { SubmitUserUseCase } from '../use-cases/submit-users-use-case';
+import { FindUserUseCase } from '../use-cases/find-users-use-case';
 
 export const routes = express.Router();
 
-routes.post('/users', async (req, res) => {
-  const { type, comment, screenshot} = req.body;
+routes.get('/users', async (request: any , response: Response): Promise<Response> => {
+  const skip = parseFloat(request.query.skip)
+  const take = parseFloat(request.query.take)
 
   const prismaUsersRepository = new PrismaUsersRepository();
 
-  const submitUserUseCase = new SubmitUserUseCase(
+  const findUserUseCase = new FindUserUseCase(
     prismaUsersRepository,
   )  
 
-  await submitUserUseCase.execute({
-    type,
-    comment,
-    screenshot
-  })
+   const result = await findUserUseCase.execute(skip, take)
 
-
-  return res.status(201).send();
+   return response.json(result)
+   
 })
