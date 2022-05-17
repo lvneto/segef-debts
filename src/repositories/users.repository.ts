@@ -1,9 +1,7 @@
 export interface UserCreateData {
-  type: string;
-  comment: string;
-  screenshot?: string;
+  users: string;
 }
 
 export interface UsersRepository {
-  create: (data: UserCreateData) => Promise<void>;
-}
+  findUsers: (skip:number, take: number) => Promise<any>;
+} 
