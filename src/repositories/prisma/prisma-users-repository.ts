@@ -11,7 +11,11 @@ export class PrismaUsersRepository implements UsersRepository {
   }
 
   async checkDatabaseAndUpdate(): Promise<any> {
-    let users = await prisma.users.findMany()
+    let users = await prisma.users.findMany({
+      where: {
+        name: null
+      }
+    })
     return users = await this.usersSanitize(users)
   }
 
@@ -19,10 +23,9 @@ export class PrismaUsersRepository implements UsersRepository {
     let arrayOfUsers = []    
   
     for (let user of users) {    
-
       if (user.users.length <= 121) {
         users.pop(user)
-        await this.remove(user)
+        await this.removeUser(user.id)
       } else {
         user.users = user.users.replaceAll('#', ',')    
         user.users = user.users.split(',')
@@ -42,15 +45,14 @@ export class PrismaUsersRepository implements UsersRepository {
         user.zip_code = user.users[7].substring(2, 10)
         arrayOfUsers.push(user)  
       }           
-    }   
-    await this.insertUsers(arrayOfUsers)
-    return arrayOfUsers
+    }       
+    return await this.insertUsers(arrayOfUsers)
   }
 
   async insertUsers (users: any): Promise<any> {    
-    for (const user of users) {
-      const check = await this.checkToUpdate(user.id) 
-      if (check) {
+    let usersUpdate = []
+    for (const user of users) {      
+        usersUpdate.push(user)
         await prisma.users.update({
           where: {
             id: user.id
@@ -70,31 +72,17 @@ export class PrismaUsersRepository implements UsersRepository {
             zip_code: user.zip_code,
             ua_jurisdiction: user.ua_jurisdiction
           }
-        })
-      } 
+        })       
       continue
     }   
-    return users
+    return usersUpdate
   }
 
-  async remove (user: any): Promise<any> {
+  async removeUser (id: any): Promise<any> {
     return await prisma.users.delete({
-      where: {
-        id: user
-      }
-    })
-  }
-
-  async checkToUpdate (id: any): Promise<any> {
-    const check = await prisma.users.findUnique({
       where: {
         id
       }
     })
-    if (check && check.name === null) { 
-      return true
-    } else {
-      return false
-    }    
   }
 }
