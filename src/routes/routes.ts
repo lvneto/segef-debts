@@ -1,5 +1,6 @@
-import express, { Response } from 'express';
+import express, { Request, Response } from 'express';
 import { PrismaUsersRepository } from '../repositories/prisma/prisma-users-repository';
+import { DatabaseUseCase } from '../use-cases/database-use-case';
 import { FindUserUseCase } from '../use-cases/find-users-use-case';
 
 export const routes = express.Router();
@@ -19,3 +20,18 @@ routes.get('/users', async (request: any , response: Response): Promise<Response
    return response.json(result)
    
 })
+
+routes.get('/database', async (request: Request , response: Response): Promise<Response> => {
+
+  const prismaUsersRepository = new PrismaUsersRepository();
+
+  const databaseUseCase = new DatabaseUseCase(
+    prismaUsersRepository,
+  )  
+
+   const result = await databaseUseCase.execute()
+
+   return response.json(result)
+   
+})
+
