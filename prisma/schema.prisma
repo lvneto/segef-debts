@@ -25,6 +25,7 @@ model Users {
   zip_code        String?
   debts           String?
   mei_inscription String?
-  article         String?
+  article         String? @db.VarChar(1024)
+  assessment      String?
   users           String? @db.VarChar(1024)
 }
