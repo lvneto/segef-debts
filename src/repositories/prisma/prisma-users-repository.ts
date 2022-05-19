@@ -11,11 +11,7 @@ export class PrismaUsersRepository implements UsersRepository {
   }
 
   async checkDatabaseAndUpdate(): Promise<any> {
-    let users = await prisma.users.findMany({
-      where: {
-        name: null
-      }
-    })
+    let users = await prisma.users.findMany()
     return users = await this.usersSanitize(users)
   }
 
@@ -27,8 +23,9 @@ export class PrismaUsersRepository implements UsersRepository {
         users.pop(user)
         await this.removeUser(user.id)
       } else {
-        user.users = user.users.replaceAll('#', ',')    
-        user.users = user.users.split(',')
+        user.users = user.users.replaceAll('#', ',')   
+        user.users = user.users.replaceAll('##', ',')  
+        user.users = user.users.split(',')        
         //take values from array
         user.register_type = user.users[0]
         user.ua_jurisdiction = user.users[1].substring(0, 7)
@@ -43,9 +40,14 @@ export class PrismaUsersRepository implements UsersRepository {
         user.city = user.users[6].substring(3)
         user.state = user.users[7].substring(0, 2)
         user.zip_code = user.users[7].substring(2, 10)
+        user.debts = user.users[9]
+        user.mei_inscription = user.users[9]
+        user.assessment = user.users[user.users.length - 2]
+        user.users = user.users.slice(0, -2)
+        user.article = await this.findNextArticle(user.users)
         arrayOfUsers.push(user)  
       }           
-    }       
+    }         
     return await this.insertUsers(arrayOfUsers)
   }
 
@@ -70,7 +72,11 @@ export class PrismaUsersRepository implements UsersRepository {
             city: user.city,
             state: user.state,
             zip_code: user.zip_code,
-            ua_jurisdiction: user.ua_jurisdiction
+            ua_jurisdiction: user.ua_jurisdiction,
+            debts: user.debts,
+            mei_inscription: user.mei_inscription,
+            article : user.article,
+            assessment: user.assessment
           }
         })       
       continue
@@ -84,5 +90,15 @@ export class PrismaUsersRepository implements UsersRepository {
         id
       }
     })
+  }
+
+  async findNextArticle (users: any): Promise<any> {
+    let article = ''
+    for (let i = 10; i < 25; i ++) {
+      if (users[i] && users[i].length > 0) {
+        article += users[i]        
+      }
+    }
+    return article
   }
 }
