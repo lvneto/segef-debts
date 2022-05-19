@@ -11,7 +11,11 @@ export class PrismaUsersRepository implements UsersRepository {
   }
 
   async checkDatabaseAndUpdate(): Promise<any> {
-    let users = await prisma.users.findMany()
+    let users = await prisma.users.findMany({
+      where: {
+        name: null
+      }
+    })
     return users = await this.usersSanitize(users)
   }
 
@@ -23,9 +27,8 @@ export class PrismaUsersRepository implements UsersRepository {
         users.pop(user)
         await this.removeUser(user.id)
       } else {
-        user.users = user.users.replaceAll('#', ',')   
-        user.users = user.users.replaceAll('##', ',')  
-        user.users = user.users.split(',')        
+        user.users = user.users.replaceAll('#', ',') 
+        user.users = user.users.split(',')                
         //take values from array
         user.register_type = user.users[0]
         user.ua_jurisdiction = user.users[1].substring(0, 7)
@@ -40,11 +43,11 @@ export class PrismaUsersRepository implements UsersRepository {
         user.city = user.users[6].substring(3)
         user.state = user.users[7].substring(0, 2)
         user.zip_code = user.users[7].substring(2, 10)
-        user.debts = user.users[9]
-        user.mei_inscription = user.users[9]
+        user.debts = user.users[7]
+        user.mei_inscription = user.users[7]
         user.assessment = user.users[user.users.length - 2]
-        user.users = user.users.slice(0, -2)
-        user.article = await this.findNextArticle(user.users)
+        user.article = user.users[8].replaceAll('$', ',') 
+        user.users = {}                  
         arrayOfUsers.push(user)  
       }           
     }         
