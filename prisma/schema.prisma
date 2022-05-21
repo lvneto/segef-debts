@@ -9,23 +9,40 @@ datasource db {
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
 model Users {
-  id              Int     @id @default(autoincrement())
-  register_type   String?
-  ua_jurisdiction String?
-  name            String?
-  cpf             String?
-  cnae            String?
-  cnpj            String?
-  logradouro      String?
-  complement      String?
-  zone            String?
-  city_code       String?
-  city            String?
-  state           String?
-  zip_code        String?
-  debts           String?
-  mei_inscription String?
-  article         String? @db.VarChar(1024)
-  assessment      String?
-  users           String? @db.VarChar(1024)
+  id                           Int     @id @default(autoincrement())
+  register_type                String?
+  ua_jurisdiction              String?
+  name                         String?
+  cnpj                         String?
+  cpf                          String?
+  cnae                         String?
+  failed_date                  String?
+  logradouro_type              String?
+  logradouro                   String?
+  number                       String?
+  complement                   String?
+  zone                         String?
+  city_code                    String?
+  city                         String?
+  state                        String?
+  zip_code                     String?
+  debts                        String?
+  release_debts                String?
+  debt_type                    String?
+  due_date                     String?
+  umv_date                     String?
+  main_debt                    String?
+  apuration_period             String?
+  declaration                  String?
+  startedCountPrescriptionDate String?
+  process                      String?
+  auto_violation               String?
+  release_check_date           String?
+  article                      String? @db.VarChar(1024)
+  extra_article                String?
+  mora_tax                     String?
+  tax_due_date                 String?
+  trade_tax_value              String?
+
+  users String? @db.VarChar(1024)
 }
