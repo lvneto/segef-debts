@@ -39,7 +39,7 @@ export class PrismaUsersRepository implements UsersRepository {
         user.logradouro_type = user.users[3].substring(0, 3)
         user.logradouro = user.users[3].substring(3)
         user.number = user.users[4].substring(user.users[4].length - 4)
-        user.complement = user.users[4].substring(6)     
+        user.complement = user.users[4].substring(6).replaceAll('$', ',')     
         user.zone = user.users[5]
         user.city_code = user.users[6].substring(0, 3)
         user.city = user.users[6].substring(4)
