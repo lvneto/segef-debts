@@ -11,7 +11,11 @@ export class PrismaUsersRepository implements UsersRepository {
   }
 
   async checkDatabaseAndUpdate(): Promise<any> {
-    let users = await prisma.users.findMany()
+    let users = await prisma.users.findMany({
+      where: { 
+        name: null
+      }
+    })
     return users = await this.usersSanitize(users)
   }
 
