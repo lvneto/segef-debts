@@ -12,8 +12,8 @@ export class PrismaUsersRepository implements UsersRepository {
 
   async checkDatabaseAndUpdate(): Promise<any> {
     let users = await prisma.users.findMany({
-      where: { 
-        name: null
+      where: {
+        name: null 
       }
     })
     return users = await this.usersSanitize(users)
@@ -38,9 +38,9 @@ export class PrismaUsersRepository implements UsersRepository {
         user.cnae = user.users[2].substring(user.users[2].length - 7)
         user.logradouro_type = user.users[3].substring(0, 3)
         user.logradouro = user.users[3].substring(3)
-        user.number = user.users[4].substring(user.users[4].length - 4)
+        user.number_house = user.users[4].substring(user.users[4].length - 4)
         user.complement = user.users[4].substring(6).replaceAll('$', ',')     
-        user.zone = user.users[5]
+        user.zone_city = user.users[5]
         user.city_code = user.users[6].substring(0, 3)
         user.city = user.users[6].substring(4)
         user.state = user.users[7].substring(0, 2)
@@ -80,9 +80,9 @@ export class PrismaUsersRepository implements UsersRepository {
             cnae : user.cnae,
             logradouro_type : user.logradouro_type,
             logradouro : user.logradouro,
-            number : user.number,
+            number_house : user.number_house,
             complement : user.complement, 
-            zone : user.zone,
+            zone_city : user.zone_city,
             city_code : user.city_code,
             city : user.city,
             state : user.state,
