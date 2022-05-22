@@ -19,9 +19,9 @@ model Users {
   failed_date                     String?
   logradouro_type                 String?
   logradouro                      String?
-  number                          String?
+  number_house                    String?
   complement                      String?
-  zone                            String?
+  zone_city                       String?
   city_code                       String?
   city                            String?
   state                           String?
