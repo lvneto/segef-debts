@@ -1,4 +1,5 @@
 import express, { Request, Response } from 'express';
+import { PrismaDatabaseRepository } from '../repositories/prisma/prisma-database-repository';
 import { PrismaUsersRepository } from '../repositories/prisma/prisma-users-repository';
 import { DatabaseUseCase } from '../use-cases/database-use-case';
 import { FindUserUseCase } from '../use-cases/find-users-use-case';
@@ -21,9 +22,27 @@ routes.get('/users', async (request: any , response: Response): Promise<Response
    
 })
 
-routes.get('/database', async (request: Request , response: Response): Promise<Response> => {
+routes.get('/users/filter', async (request: any , response: Response): Promise<Response> => {
+  const skip = parseFloat(request.query.skip)
+  const take = parseFloat(request.query.take)
+  const cnpj = request.query.cnpj 
+  const cpf = request.query.cpf
 
   const prismaUsersRepository = new PrismaUsersRepository();
+
+  const findUserUseCase = new FindUserUseCase(
+    prismaUsersRepository,
+  )  
+
+   const result = await findUserUseCase.findUser(skip, take, cnpj, cpf)
+
+   return response.json(result)
+   
+})
+
+routes.get('/database', async (request: Request , response: Response): Promise<Response> => {
+
+  const prismaUsersRepository = new PrismaDatabaseRepository();
 
   const databaseUseCase = new DatabaseUseCase(
     prismaUsersRepository,
