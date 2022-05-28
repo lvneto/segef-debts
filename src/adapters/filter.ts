@@ -20,8 +20,9 @@ function filter(inputFile: any,outputFile: any) {
         stream.close();
         break;
       default:
-        line = line.replace(/\s\s+/g,'#');
-        line = line.replaceAll(',','$');               
+        line = line.replaceAll(';','#');   
+        line = line.replaceAll(',','$');  
+        line = line.replaceAll('"','|');          
         writeStream.write(`${line}\n`);
         break;
     }
@@ -36,4 +37,4 @@ function filter(inputFile: any,outputFile: any) {
   });
 } 
 
-filter('02-0415-INSCOBRA-20211226-01.txt', '02-0415-INSCOBRA-20211226-01.csv')
+filter('02-0415-INSCOBRA-20211205-01.txt', '02-0415-INSCOBRA-20211205-01.csv')
