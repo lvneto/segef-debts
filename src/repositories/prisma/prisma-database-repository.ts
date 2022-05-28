@@ -4,7 +4,11 @@ import { DatabaseRepository } from '../database.repository';
 export class PrismaDatabaseRepository implements DatabaseRepository {
 
   async checkDatabaseAndUpdate(): Promise<any> {
-    let users = await prisma.users.findMany()
+    let users = await prisma.users.findMany({
+      where: {
+        OR: [{cpf: null}, {cnpj: null}]
+      }
+    })
     return users = await this.usersSanitize(users)
   }
 
@@ -17,8 +21,7 @@ export class PrismaDatabaseRepository implements DatabaseRepository {
         user.users = user.users.replaceAll('#',';');
         user.users = user.users.replaceAll('$',',');
         user.users = user.users.replaceAll('|','"');
-        user.users = user.users.replaceAll('{','#');
-        user.users = user.users.split('#');
+        user.users = user.users.split('{');
   
         user.register_type = user.users[0]
         user.ua_jurisdiction = user.users[1].substring(0, 7)
@@ -46,7 +49,7 @@ export class PrismaDatabaseRepository implements DatabaseRepository {
         user.started_count_prescription_date = await this.sanitizeFullyData(user.users[7].substring(72)) 
         user.article = user.users[8]  
         user.mora_tax = user.users.slice(user.users.length - 2)[0].substring(2, user.users.length - 2)    
-        
+        user.users = {}
         arrayOfUsers.push(user) 
                       
       }          
