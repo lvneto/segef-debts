@@ -22,8 +22,14 @@ export class PrismaUsersRepository implements UsersRepository {
     for (const user of users) {
       user.cnpj = await this.sanitizeCnpj(user.cnpj)
       user.cpf = await this.sanitizeCpf(user.cpf)
+      user.due_date = await this.sanitizeFullyDate(user.due_date)
+      user.started_count_prescription_date = await this.sanitizeFullyDate(user.started_count_prescription_date)
     }
     return users
+  }
+
+  async sanitizeFullyDate(date: any) {   
+    return date.toISOString().substr(0, 10).split('-').reverse().join('/')
   }
   
   async sanitizeCnpj(cnpj: string) {
