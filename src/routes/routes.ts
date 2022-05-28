@@ -9,24 +9,8 @@ export const routes = express.Router();
 routes.get('/users', async (request: any , response: Response): Promise<Response> => {
   const skip = parseFloat(request.query.skip)
   const take = parseFloat(request.query.take)
-
-  const prismaUsersRepository = new PrismaUsersRepository();
-
-  const findUserUseCase = new FindUserUseCase(
-    prismaUsersRepository,
-  )  
-
-   const result = await findUserUseCase.execute(skip, take)
-
-   return response.json(result)
-   
-})
-
-routes.get('/users/filter', async (request: any , response: Response): Promise<Response> => {
-  const skip = parseFloat(request.query.skip)
-  const take = parseFloat(request.query.take)
-  const cnpj = request.query.cnpj 
-  const cpf = request.query.cpf
+  const cnpj = request.query.cnpj || null
+  const cpf = request.query.cpf || null
 
   const prismaUsersRepository = new PrismaUsersRepository();
 
