@@ -26,9 +26,9 @@ export class PrismaDatabaseRepository implements DatabaseRepository {
         user.register_type = user.users[0]
         user.ua_jurisdiction = user.users[1].substring(0, 7)
         user.name = user.users[1].substring(7, user.users[1].length - 12)
-        user.cnpj = await this.sanitizeCnpj(user.users[2].substring(0, 14))
+        user.cnpj = user.users[2].substring(0, 14)
         user.cnae = user.users[2].substring(user.users[2].length - 7)
-        user.cpf = await this.sanitizeCpf(user.users[1].substring(user.users[1].length - 11))
+        user.cpf = user.users[1].substring(user.users[1].length - 11)
         user.logradouro_type = user.users[3].substring(0, 3)
         user.logradouro = user.users[3].substring(3)
         user.number_house = user.users[4].substring(user.users[4].length - 4)
@@ -122,26 +122,6 @@ export class PrismaDatabaseRepository implements DatabaseRepository {
         id
       }
     })
-  }
-
-  async sanitizeCpf(cpf: string) {
-    
-    const cpfTreeFirst = cpf.substring(0, 3)
-    const cpfTreeSecond = cpf.substring(3, cpf.length - 5)
-    const cpfTreeThird = cpf.substring(6, cpf.length - 2)
-    const cpfDigit = cpf.substring(cpf.length -2)
-
-    return `${cpfTreeFirst}.${cpfTreeSecond}.${cpfTreeThird}-${cpfDigit}`
-  }
-
-  async sanitizeCnpj(cnpj: string) {
-    const cnpjTwo = cnpj.substring(0, 2)
-    const cnpjTreeFirts = cnpj.substring(2, cnpj.length - 9)
-    const cnpjTreeSecond = cnpj.substring(5, cnpj.length -6)
-    const cnpjTreeThird = cnpj.substring(8, cnpj.length -2)
-    const cnpjDigit = cnpj.substring(cnpj.length -2)
-
-    return `${cnpjTwo}.${cnpjTreeFirts}.${cnpjTreeSecond}/${cnpjTreeThird}-${cnpjDigit}`
   }
 }
 
