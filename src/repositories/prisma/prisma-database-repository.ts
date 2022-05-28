@@ -4,34 +4,32 @@ import { DatabaseRepository } from '../database.repository';
 export class PrismaDatabaseRepository implements DatabaseRepository {
 
   async checkDatabaseAndUpdate(): Promise<any> {
-    let users = await prisma.users.findMany({
-      where: {
-        name: null 
-      }
-    })
+    let users = await prisma.users.findMany()
     return users = await this.usersSanitize(users)
   }
 
   async usersSanitize (users: any): Promise<any> {
-    let arrayOfUsers = []    
+    let arrayOfUsers = []
+
+    for (let user of users) {   
+    
+        user.users = user.users.replaceAll(/\s\s+/g,'{');
+        user.users = user.users.replaceAll('#',';');
+        user.users = user.users.replaceAll('$',',');
+        user.users = user.users.replaceAll('|','"');
+        user.users = user.users.replaceAll('{','#');
+        user.users = user.users.split('#');
   
-    for (let user of users) {    
-      if (user.users.length <= 121) {
-        users.pop(user)
-      } else {
-        user.users = user.users.replaceAll('#', ',') 
-        user.users = user.users.split(',')                
-        //take values from array
         user.register_type = user.users[0]
         user.ua_jurisdiction = user.users[1].substring(0, 7)
-        user.name = user.users[1].substring(7) && user.users[1].substring(7, user.users[1].length - 12)
-        user.cpf = user.users[1].substring(user.users[1].length - 11) 
-        user.cnpj = user.users[2].substring(user.users[2].length - 14)
+        user.name = user.users[1].substring(7, user.users[1].length - 12)
+        user.cnpj = await this.sanitizeCnpj(user.users[2].substring(0, 14))
         user.cnae = user.users[2].substring(user.users[2].length - 7)
+        user.cpf = await this.sanitizeCpf(user.users[1].substring(user.users[1].length - 11))
         user.logradouro_type = user.users[3].substring(0, 3)
         user.logradouro = user.users[3].substring(3)
         user.number_house = user.users[4].substring(user.users[4].length - 4)
-        user.complement = user.users[4].substring(6).replaceAll('$', ',')     
+        user.complement = user.users[4].substring(6)    
         user.zone_city = user.users[5]
         user.city_code = user.users[6].substring(0, 3)
         user.city = user.users[6].substring(4)
@@ -40,18 +38,19 @@ export class PrismaDatabaseRepository implements DatabaseRepository {
         user.debts = user.users[7].substring(10, user.users[7].length - 68)
         user.release_debts = user.users[7].substring(12, user.users[7].length - 66)
         user.debt_type = user.users[7].substring(14, user.users[7].length - 64)
-        user.due_date = await this.sanitizeData(user.users[7].substring(16, user.users[7].length - 56))  
+        user.due_date = await this.sanitizeFullyData(user.users[7].substring(16, user.users[7].length - 56))  
         user.umv = user.users[7].substring(24, user.users[7].length - 52)
-        user.main_debt = user.users[7].substring(29, user.users[7].length - 31).replaceAll('$', ',')
-        user.apuration_period = user.users[7].substring(49, user.users[7].length - 25)
+        user.main_debt = parseFloat(user.users[7].substring(29, user.users[7].length - 31))
+        user.apuration_period = await this.sanitizePartialDate(user.users[7].substring(49, user.users[7].length - 25))
         user.declaration = user.users[7].substring(55, user.users[7].length - 8)
-        user.started_count_prescription_date = await this.sanitizeData(user.users[7].substring(72)) 
-        user.article = user.users[8].replaceAll('$', ',')    
+        user.started_count_prescription_date = await this.sanitizeFullyData(user.users[7].substring(72)) 
+        user.article = user.users[8]  
         user.mora_tax = user.users.slice(user.users.length - 2)[0].substring(2, user.users.length - 2)    
-        user.users = {}      
-        arrayOfUsers.push(user)  
-      }           
-    }         
+        
+        arrayOfUsers.push(user) 
+                      
+      }          
+            
     return await this.insertUsers(arrayOfUsers)
   }
 
@@ -96,7 +95,25 @@ export class PrismaDatabaseRepository implements DatabaseRepository {
     return usersUpdate
   }
 
-  async removeUser (id: any): Promise<any> {
+  async sanitizeFullyData(date: string) {
+    const year = date.substring(0, date.length - 4)
+    const month = date.substring(4, date.length - 2)
+    const day = date.substring(6)
+
+    const newDate = `${year}-${month}-${day}`
+    return new Date(newDate) 
+  }
+
+  async sanitizePartialDate(date: string) {
+
+    const year = date.substring(0, 4)
+    const month = date.substring(4, 2)
+
+    const newDate = `${month}/${year}`
+    return newDate
+  }
+
+  async removeUser(id: number) {
     return await prisma.users.delete({
       where: {
         id
@@ -104,22 +121,24 @@ export class PrismaDatabaseRepository implements DatabaseRepository {
     })
   }
 
-  async findNextArticle (users: any): Promise<any> {
-    let article = ''
-    for (let i = 10; i < 25; i ++) {
-      if (users[i] && users[i].length > 0) {
-        article += users[i]        
-      }
-    }
-    return article
+  async sanitizeCpf(cpf: string) {
+    
+    const cpfTreeFirst = cpf.substring(0, 3)
+    const cpfTreeSecond = cpf.substring(3, cpf.length - 5)
+    const cpfTreeThird = cpf.substring(6, cpf.length - 2)
+    const cpfDigit = cpf.substring(cpf.length -2)
+
+    return `${cpfTreeFirst}.${cpfTreeSecond}.${cpfTreeThird}-${cpfDigit}`
   }
 
-  async sanitizeData(date: string) {
-    const year = date.substring(0, date.length - 4)
-    const month = date.substring(4, date.length - 2)
-    const day = date.substring(6)
+  async sanitizeCnpj(cnpj: string) {
+    const cnpjTwo = cnpj.substring(0, 2)
+    const cnpjTreeFirts = cnpj.substring(2, cnpj.length - 9)
+    const cnpjTreeSecond = cnpj.substring(5, cnpj.length -6)
+    const cnpjTreeThird = cnpj.substring(8, cnpj.length -2)
+    const cnpjDigit = cnpj.substring(cnpj.length -2)
 
-    const newDate = `${day}-${month}-${year}`
-    return newDate 
+    return `${cnpjTwo}.${cnpjTreeFirts}.${cnpjTreeSecond}/${cnpjTreeThird}-${cnpjDigit}`
   }
 }
+
