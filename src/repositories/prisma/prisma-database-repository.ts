@@ -18,43 +18,42 @@ export class PrismaDatabaseRepository implements DatabaseRepository {
     await this.removeUser(users.slice(-1)[0].id)
     users.pop(users.slice(-1))    
     
-    for (let user of users) {        
-                   
-          user.users = user.users.replaceAll(/\s\s+/g,'{');
-          user.users = user.users.replaceAll('#',';');
-          user.users = user.users.replaceAll('$',',');
-          user.users = user.users.replaceAll('|','"');
-          user.users = user.users.split('{');
-    
-          user.register_type = user.users[0]
-          user.ua_jurisdiction = user.users[1].substring(0, 7)
-          user.name = user.users[1].substring(7, user.users[1].length - 12)
-          user.cnpj = user.users[2].substring(0, 14)
-          user.cnae = user.users[2].substring(user.users[2].length - 7)
-          user.cpf = user.users[1].substring(user.users[1].length - 11)
-          user.logradouro_type = user.users[3].substring(0, 3)
-          user.logradouro = user.users[3].substring(3)
-          user.number_house = user.users[4].substring(user.users[4].length - 4)
-          user.complement = user.users[4].substring(6)    
-          user.zone_city = user.users[5]
-          user.city_code = user.users[6].substring(0, 3)
-          user.city = user.users[6].substring(4)
-          user.state = user.users[7].substring(0, 2)
-          user.zip_code = user.users[7].substring(2, 10)
-          user.debts = user.users[7].substring(10, user.users[7].length - 68)
-          user.release_debts = user.users[7].substring(12, user.users[7].length - 66)
-          user.debt_type = user.users[7].substring(14, user.users[7].length - 64)
-          user.due_date = await this.sanitizeFullyData(user.users[7].substring(16, user.users[7].length - 56))  
-          user.umv = user.users[7].substring(24, user.users[7].length - 52)
-          user.main_debt = parseFloat(user.users[7].substring(29, user.users[7].length - 31))
-          user.apuration_period = await this.sanitizePartialDate(user.users[7].substring(49, user.users[7].length - 25))
-          user.declaration = user.users[7].substring(55, user.users[7].length - 8)
-          user.started_count_prescription_date = await this.sanitizeFullyData(user.users[7].substring(72)) 
-          user.article = user.users[8]  
-          user.mora_tax = user.users.slice(user.users.length - 2)[0].substring(2, user.users.length - 2)    
-          user.users = {}
-          arrayOfUsers.push(user)                           
-      }          
+    for (let user of users) {      
+      user.users = user.users.replaceAll(/\s\s+/g,'{');
+      user.users = user.users.replaceAll('#',';');
+      user.users = user.users.replaceAll('$',',');
+      user.users = user.users.replaceAll('|','"');
+      user.users = user.users.split('{');
+
+      user.register_type = user.users[0]
+      user.ua_jurisdiction = user.users[1].substring(0, 7)
+      user.name = user.users[1].substring(7, user.users[1].length - 12)
+      user.cnpj = user.users[2].substring(0, 14)
+      user.cnae = user.users[2].substring(user.users[2].length - 7)
+      user.cpf = user.users[1].substring(user.users[1].length - 11)
+      user.logradouro_type = user.users[3].substring(0, 3)
+      user.logradouro = user.users[3].substring(3)
+      user.number_house = user.users[4].substring(user.users[4].length - 4)
+      user.complement = user.users[4].substring(6)    
+      user.zone_city = user.users[5]
+      user.city_code = user.users[6].substring(0, 3)
+      user.city = user.users[6].substring(4)
+      user.state = user.users[7].substring(0, 2)
+      user.zip_code = user.users[7].substring(2, 10)
+      user.debts = user.users[7].substring(10, user.users[7].length - 68)
+      user.release_debts = user.users[7].substring(12, user.users[7].length - 66)
+      user.debt_type = user.users[7].substring(14, user.users[7].length - 64)
+      user.due_date = await this.sanitizeFullyData(user.users[7].substring(16, user.users[7].length - 56))  
+      user.umv = user.users[7].substring(24, user.users[7].length - 52)
+      user.main_debt = parseFloat(user.users[7].substring(29, user.users[7].length - 31))
+      user.apuration_period = await this.sanitizePartialDate(user.users[7].substring(49, user.users[7].length - 25))
+      user.declaration = user.users[7].substring(55, user.users[7].length - 8)
+      user.started_count_prescription_date = await this.sanitizeFullyData(user.users[7].substring(72)) 
+      user.article = user.users[8]  
+      user.mora_tax = user.users.slice(user.users.length - 2)[0].substring(2, user.users.length - 2)    
+      user.users = {}
+      arrayOfUsers.push(user)                           
+    }          
             
     return await this.insertUsers(arrayOfUsers)
   }
