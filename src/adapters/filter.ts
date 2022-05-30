@@ -37,4 +37,4 @@ function filter(inputFile: any,outputFile: any) {
   });
 } 
 
-filter('02-0415-INSCOBRA-20211205-01.txt', '02-0415-INSCOBRA-20211205-01.csv')
+filter('02-0415-INSCOBRA-20211107-01.txt', '02-0415-INSCOBRA-20211107-01.csv')
