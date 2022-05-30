@@ -5,7 +5,7 @@ export class FindUserUseCase {
     private usersRepository: UsersRepository,
   ) {}
 
-  async findUser(skip: number, take: number, cnpj: string, cpf: string): Promise<any> {   
+  async execute(skip: number, take: number, cnpj: string, cpf: string): Promise<any> {   
     return await this.usersRepository.findUser(skip, take, cnpj, cpf)    
   }
 }

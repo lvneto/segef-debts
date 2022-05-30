@@ -18,7 +18,7 @@ routes.get('/users', async (request: any , response: Response): Promise<Response
     prismaUsersRepository,
   )  
 
-   const result = await findUserUseCase.findUser(skip, take, cnpj, cpf)
+   const result = await findUserUseCase.execute(skip, take, cnpj, cpf)
 
    return response.json(result)
    
