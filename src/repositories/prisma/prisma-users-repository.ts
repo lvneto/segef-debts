@@ -15,16 +15,23 @@ export class PrismaUsersRepository implements UsersRepository {
       }  
     })
      
-    return await this.sanitizeUsers(users)
+    return await this.sanitizeAndCountTotalDebtUsers(users)
   }
 
-  async sanitizeUsers(users: any) {
+  async sanitizeAndCountTotalDebtUsers(users: any) {
+    let totalMainDebt = 0
+
     for (const user of users) {
       user.cnpj = await this.sanitizeCnpj(user.cnpj)
       user.cpf = await this.sanitizeCpf(user.cpf)
       user.due_date = await this.sanitizeFullyDate(user.due_date)
       user.started_count_prescription_date = await this.sanitizeFullyDate(user.started_count_prescription_date)
-    }
+      user.users = {}
+      totalMainDebt += parseFloat(user.main_debt)
+    }    
+    
+    users.push('R$ ' + totalMainDebt)
+
     return users
   }
 
