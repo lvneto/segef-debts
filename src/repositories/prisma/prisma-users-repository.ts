@@ -19,10 +19,8 @@ export class PrismaUsersRepository implements UsersRepository {
   }
 
   async sanitizeAndCountTotalDebtUsers(users: any) {
-    let data = {
-      totalMainDebt: 0,
-      users
-    }
+    let usersData = {} as any
+    let countTotalDebt = 0
 
     for (const user of users) {
       user.cnpj = await this.sanitizeCnpj(user.cnpj)
@@ -30,12 +28,13 @@ export class PrismaUsersRepository implements UsersRepository {
       user.due_date = await this.sanitizeFullyDate(user.due_date)
       user.started_count_prescription_date = await this.sanitizeFullyDate(user.started_count_prescription_date)
       user.users = {}
-      data.totalMainDebt += parseFloat(user.main_debt)
+      countTotalDebt += parseFloat(user.main_debt)
     }
 
-    data.users = users
+    usersData.totalMainDebt = countTotalDebt
+    usersData.users = users    
     
-    return data
+    return usersData
   }
 
   async sanitizeFullyDate(date: any) {   
