@@ -1,4 +1,5 @@
 import express, { Request, Response } from 'express';
+import { sanitizeUsersParameters } from '../middleware/users.middleware';
 import { PrismaDatabaseRepository } from '../repositories/prisma/prisma-database-repository';
 import { PrismaUsersRepository } from '../repositories/prisma/prisma-users-repository';
 import { DatabaseUseCase } from '../use-cases/database-use-case';
@@ -6,11 +7,11 @@ import { FindUserUseCase } from '../use-cases/find-users-use-case';
 
 export const routes = express.Router();
 
-routes.get('/users', async (request: any , response: Response): Promise<Response> => {
+routes.get('/users', sanitizeUsersParameters, async (request: any , response: Response): Promise<Response> => {
   const skip = parseFloat(request.query.skip)
   const take = parseFloat(request.query.take)
-  const cnpj = request.query.cnpj || null
-  const cpf = request.query.cpf || null
+  const cnpj = request.query.cnpj || undefined
+  const cpf = request.query.cpf || undefined  
 
   const prismaUsersRepository = new PrismaUsersRepository();
 
