@@ -4,6 +4,18 @@ import { UsersRepository } from '../users.repository';
 export class PrismaUsersRepository implements UsersRepository {
 
   async findUser (skip: number, take: number, document: string): Promise<any> { 
+     
+    const users = await prisma.users.findMany({       
+      distinct: ['name'],
+      where: {       
+        OR:  [{ cnpj: document }, { cpf: document }]           
+      },    
+      skip: skip || 0,
+      take: take || 100,
+      orderBy: {
+        started_count_prescription_date: 'desc'
+      }  
+    })
 
     const totalUserRegisters = await prisma.users.count({
       where: {
@@ -19,19 +31,7 @@ export class PrismaUsersRepository implements UsersRepository {
       where: {       
         OR:  [{ cnpj: document }, { cpf: document }]           
       },   
-    })
-    
-    const users = await prisma.users.findMany({       
-      distinct: ['name'],
-      where: {       
-        OR:  [{ cnpj: document }, { cpf: document }]           
-      },    
-      skip: skip || 0,
-      take: take || 100,
-      orderBy: {
-        started_count_prescription_date: 'desc'
-      }  
-    })
+    })   
      
     return await this.sanitizeAndCount(users, totalUserRegisters, distinctCitys)
   }
