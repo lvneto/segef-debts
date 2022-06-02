@@ -3,10 +3,28 @@ import { UsersRepository } from '../users.repository';
 
 export class PrismaUsersRepository implements UsersRepository {
 
-  async findUser (skip: number, take: number, cnpj: string, cpf: string): Promise<any> {     
-    const users = await prisma.users.findMany({
+  async findUser (skip: number, take: number, doc: string): Promise<any> { 
+
+    const totalUserRegisters = await prisma.users.count({
+      where: {
+        OR: [{ cnpj: doc }, { cpf: doc }]
+      }
+    })  
+
+    const distinctCitys = await prisma.users.findMany({
+      distinct: ['city'], 
+      select: {
+        city: true
+      },
       where: {       
-        OR:  [{ cnpj }, { cpf }]           
+        OR:  [{ cnpj: doc }, { cpf: doc }]           
+      },   
+    })
+    
+    const users = await prisma.users.findMany({       
+      distinct: ['name'],
+      where: {       
+        OR:  [{ cnpj: doc }, { cpf: doc }]           
       },    
       skip: skip || 0,
       take: take || 100,
@@ -15,10 +33,10 @@ export class PrismaUsersRepository implements UsersRepository {
       }  
     })
      
-    return await this.sanitizeAndCountTotalDebtUsers(users)
+    return await this.sanitizeAndCount(users, totalUserRegisters, distinctCitys)
   }
 
-  async sanitizeAndCountTotalDebtUsers(users: any) {
+  async sanitizeAndCount(users: any, totalUserRegisters: number, distinctCitys: any) {
     let usersData = {} as any
     let countTotalDebt = 0
 
@@ -31,8 +49,10 @@ export class PrismaUsersRepository implements UsersRepository {
       countTotalDebt += parseFloat(user.main_debt)
     }
 
+    usersData.totalUserRegisters = totalUserRegisters
     usersData.totalMainDebt = countTotalDebt
-    usersData.users = users    
+    usersData.distinctCitys = distinctCitys
+    usersData.users = users        
     
     return usersData
   }
