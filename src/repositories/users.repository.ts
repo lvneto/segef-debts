@@ -19,5 +19,5 @@ export interface UserCreateData {
 }
 
 export interface UsersRepository {
-  findUser: (skip: number, take: number, doc: string) => Promise<any>;
+  findUser: (skip: number, take: number, document: string) => Promise<any>;
 } 

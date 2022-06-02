@@ -3,11 +3,11 @@ import { UsersRepository } from '../users.repository';
 
 export class PrismaUsersRepository implements UsersRepository {
 
-  async findUser (skip: number, take: number, doc: string): Promise<any> { 
+  async findUser (skip: number, take: number, document: string): Promise<any> { 
 
     const totalUserRegisters = await prisma.users.count({
       where: {
-        OR: [{ cnpj: doc }, { cpf: doc }]
+        OR: [{ cnpj: document }, { cpf: document }]
       }
     })  
 
@@ -17,14 +17,14 @@ export class PrismaUsersRepository implements UsersRepository {
         city: true
       },
       where: {       
-        OR:  [{ cnpj: doc }, { cpf: doc }]           
+        OR:  [{ cnpj: document }, { cpf: document }]           
       },   
     })
     
     const users = await prisma.users.findMany({       
       distinct: ['name'],
       where: {       
-        OR:  [{ cnpj: doc }, { cpf: doc }]           
+        OR:  [{ cnpj: document }, { cpf: document }]           
       },    
       skip: skip || 0,
       take: take || 100,
