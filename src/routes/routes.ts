@@ -10,8 +10,7 @@ export const routes = express.Router();
 routes.get('/users', sanitizeUsersParameters, async (request: any , response: Response): Promise<Response> => {
   const skip = parseFloat(request.query.skip)
   const take = parseFloat(request.query.take)
-  const cnpj = request.query.cnpj || undefined
-  const cpf = request.query.cpf || undefined  
+  const doc = request.query.doc || undefined
 
   const prismaUsersRepository = new PrismaUsersRepository();
 
@@ -19,7 +18,7 @@ routes.get('/users', sanitizeUsersParameters, async (request: any , response: Re
     prismaUsersRepository,
   )  
 
-   const result = await findUserUseCase.execute(skip, take, cnpj, cpf)
+   const result = await findUserUseCase.execute(skip, take, doc)
 
    return response.json(result)
    
@@ -38,4 +37,5 @@ routes.get('/database', async (request: Request , response: Response): Promise<R
    return response.json(result)
    
 })
+
 
