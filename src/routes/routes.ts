@@ -10,7 +10,7 @@ export const routes = express.Router();
 routes.get('/users', sanitizeUsersParameters, async (request: any , response: Response): Promise<Response> => {
   const skip = parseFloat(request.query.skip)
   const take = parseFloat(request.query.take)
-  const document = request.query.doc || undefined
+  const document = request.query.document || undefined
 
   const prismaUsersRepository = new PrismaUsersRepository();
 
