@@ -11,7 +11,7 @@ export class PrismaUsersRepository implements UsersRepository {
         OR:  [{ cnpj: document }, { cpf: document }]           
       },    
       skip: skip || 0,
-      take: take || 100,
+      take: take || 30,
       orderBy: {
         started_count_prescription_date: 'desc'
       }  
