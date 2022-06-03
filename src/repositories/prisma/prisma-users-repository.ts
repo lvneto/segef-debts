@@ -5,9 +5,8 @@ export class PrismaUsersRepository implements UsersRepository {
 
   async findUser (skip: number, take: number, document: string): Promise<any> { 
      
-    const users = await prisma.users.findMany({       
-      distinct: ['name'],
-      where: {       
+    const users = await prisma.users.findMany({     
+       where: {       
         OR:  [{ cnpj: document }, { cpf: document }]           
       },    
       skip: skip || 0,
